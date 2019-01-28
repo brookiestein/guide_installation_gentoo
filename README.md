@@ -198,10 +198,10 @@ Bien, ha llegado quizás el momento más importante de toda la guía, la compila
 *__Dicho en forma de broma__* Hacerlo como los hombres y compilar el kernel/núcleo de forma manual o utilizar la herramienta *__Genkernel__* que hace todo el proceso de forma automatica jeje. Bien vamos de menor a mayor, así que primero explicaré cómo hacerlo con *__Genkernel__*. Primero instalaremos algunos paquetes importantes. Éstos te servirán independientemente de la opción de compilación del kernel/núcleo que hallas elegido.
 
 ```
-# emerge -a gentoo-sources genkernel sys-boot/grub:2 dhcpcd gentoolkit pciutils cryptsetup dosfstools ntfs3g
+# emerge -a gentoo-sources genkernel sys-boot/grub:2 dhcpcd gentoolkit pciutils dosfstools ntfs3g
 ```
 
-Aquí los paquetes importantes son: *__gentoo-sources, genkernel, sys-boot/grub:2, dhcpcd, gentoolkit, cryptsetup y pciutils__* los otros dos son controladores para poder detectar dispositivos FAT32 (*__dosfstools__*) y dispositivos NTFS (*__ntfs3g__*). Cuándo termine de compilar esos paquetes, crea el enlace a las fuentes del kernel/núcleo:
+Aquí los paquetes importantes son: *__gentoo-sources, genkernel, sys-boot/grub:2, dhcpcd, gentoolkit y pciutils__* los otros dos son controladores para poder detectar dispositivos FAT32 (*__dosfstools__*) y dispositivos NTFS (*__ntfs3g__*). Cuándo termine de compilar esos paquetes, crea el enlace a las fuentes del kernel/núcleo:
 
 ```
 # ls -l /usr/src/linux
@@ -381,7 +381,7 @@ __Habilitar soporte para Bluetooth__
 
 Y por último...
 
-__Habilitar el soporte para opciones de criptografía ya que al principio ciframos algunas particiones:__
+__Habilitar el soporte para contar con opciones criptográficas:__
 
 __Habilitando el mapeador de dispositivos y el destino crypt__
 ```
@@ -505,8 +505,11 @@ Para que sepas que nombre es asignado a tu tarjeta de ethernet y así poder conf
 # nano -lw /etc/conf.d/net
 ```
 
-Dentro del archivo pones: *__config_eno1="dhcp"__* evidentemente *__eno1__* lo cambias por el nombre que se le asignó a tu tarjeta de ethernet.
-
+Dentro del archivo pones: 
+```
+config_eno1="dhcp"
+Evidentemente *__eno1__* lo cambias por el nombre que se le asignó a tu tarjeta de ethernet.
+```
 Bien, ya casi hemos terminado, pero no te desconcentres porque ahora vamos por otro de los puntos más importantes y es el de asignar una contraseña al usuario root.
 
 ```
@@ -519,7 +522,7 @@ Ahora estableceremos la distribución que tendrá nuestro teclado en la's tty's.
 ```
 # nano -lw /etc/conf.d/keymaps
 ```
-Yo utilizo como distribución: *__Inglés (Estados Unidos Internacional)__* y el que trae por defecto sólo es *__Inglés__* así que, en mi caso, quedaría más o menos así:
+Yo utilizo como distribución: *__Inglés (Estados Unidos Internacional)__* y el que trae por defecto sólo es *__Inglés__* así que, en mi caso, quedaría más o menos de la siguiente forma:
 
 ```
 # Use keymap to specify the default console keymap.  There is a complete tree
