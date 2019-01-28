@@ -1,4 +1,4 @@
-__Guía de instalación de Gentoo con LUKS:__
+__Guía de instalación de Gentoo__
 
 Ésta es una guía de instalación de Gentoo personal, es decir, todo lo que ella tenga son cosas que yo aplico a mi sistema.
 Evidentemente ésto no impide que tú, querido lector, le saques provecho, así que sin más empecemos.
@@ -12,7 +12,7 @@ Bien, ya teniendo nuestra USB booteada con Gentoo, procederemos a entrar desde e
 Llegados a éste punto toca particionar nuestro disco duro o SSD. Para éste fin yo utilizo la herramienta __"cfdisk"__ que ya viene en el livecd de Gentoo: Yo hago 4 particiones: __/boot, swap, / y /home__.
 
 ```
-# cfdisk /dev/sda
+# cfdisk
 ```
 
 Particionar con cfdisk es realmente sencillo, seleccionas el espacio vacío o en el caso de que el disco ya tenga formato, pues eliminarlo con la opción __"Remove"__, *__te moverás con las flechas arriba, izquierda, abajo y derecha y seleccionas con enter__*.
@@ -26,40 +26,22 @@ Es el turno de darle un FS (FileSystem) o Sistema de Ficheros a nuestras partici
 /dev/sda4 para /home
 ```
 
-Ahora toca cifrar las particiones, excepto /boot. Éste paso no es necesario, pero como dije al principio de la guía, es lo que hago yo al momento de instalar Gentoo. Te pedirá una frase de paso, asegúrate de que sea lo suficientemente fuerte
-
 ```
-    # cryptsetup luksFormat /dev/sda2
-    # cryptsetup luksFormat /dev/sda3
-    # cryptsetup luksFormat /dev/sda4
-```
-
-Para poder utilizar las particiones hay que abrirlas:
-
-```
-    # cryptsetup luksOpen /dev/sda2 swap
-    # cryptsetup luksOpen /dev/sda3 root
-    # cryptsetup luksOpen /dev/sda4 home
-```
-
-Los nombres que tienen después de la ubicación de la partición, es el nombre identificativo de la unidad.
-
-```
-   # mkfs.ext2 /dev/sda1
-   # mkswap /dev/mapper/swap
-   # swapon /dev/mapper/swap
-   # mkfs.ext4 /dev/mapper/root
-   # mkfs.ext4 /dev/mapper/home
+# mkfs.ext2 /dev/sda1
+# mkswap /dev/sda2
+# swapon /dev/sda2
+# mkfs.ext4 /dev/sda3
+# mkfs.ext4 /dev/sda4
 ```
 
 Montar las particiones:
 
 ```
-   # mount /dev/mapper/root /mnt/gentoo
-   # cd /mnt/gentoo
-   # mkdir boot home
-   # mount /dev/sda1 boot
-   # mount /dev/mapper/home home
+# mount /dev/sda3 /mnt/gentoo
+# cd /mnt/gentoo
+# mkdir boot home
+# mount /dev/sda1 boot
+# mount /dev/sda4 home
 ```
 
 Descargar el stage (En el [Handbook](https://wiki.gentoo.org/wiki/Handbook:AMD64/Full/Installation/es) recomiendan el stage 3, así que ese será el que descargaremos), en la misma página de dónde descargamos la iso de Gentoo está el stage 3. [__Aquí__](https://www.gentoo.org/downloads/)
@@ -67,10 +49,10 @@ Descargar el stage (En el [Handbook](https://wiki.gentoo.org/wiki/Handbook:AMD64
 Después de haber descargado el stage 3 debemos descomprimirlo:
 
 ```
-    # tar xfv stage3-amd64-*
+# tar xfv stage3-amd64-*
 ```
 
-Editar el make.conf. En archivo make.conf ubicado en /etc/portage/make.conf, es el archivo de configuración de portage, la herramienta que se utiliza para compilar los paquetes en Gentoo, asi que como adivinarás, es muy importante. Viene así:
+Editar el make.conf. El archivo make.conf ubicado en /etc/portage/make.conf, es el archivo de configuración de portage, la herramienta que se utiliza para compilar los paquetes en Gentoo, asi que como adivinarás, es muy importante. Viene así:
 
 ```
 # These settings were set by the catalyst build script that automatically
@@ -128,50 +110,50 @@ En __LINGUAS__ y __L10N__ son variables para la configuración del idioma, de ah
 EN __VIDEO_CARDS__ debes ponerle la tarjeta de vídeo que tienes, yo tengo una tarjeta de vídeo integrada en mi procesador intel así que queda como: *__VIDEO_CARDS="intel"__*, si tienes otra gráfica deberás ponerla, si no sabes cuál tarjeta gráfica tienes puedes guardar los cambios, salir y en el prompt escribir lo siguiente:
 
 ```
-    # lspci | grep VGA
+# lspci | grep VGA
 ```
 Para obtener información sobre tu tarjeta gráfica. Y por último en __GRUB_PLATFORMS__ es para que el grub, que instalaremos más tarde sepa con qué configuración instalase, con decirle *__GRUB_PLATFORMS="pc"__* le estás diciendo que se instale con las configuraciones por defecto, ahora bien, si tienes EFI deberás realizar algunos pasos extra. Puedes informarte en el [Handbook](https://wiki.gentoo.org/wiki/Handbook:AMD64/Full/Installation/es#Seleccionar_un_gestor_de_arranque).
 
 Copiar la información DNS:
 
 ```
-    # cp -L /etc/resolv.conf /mnt/gentoo/etc
+# cp -L /etc/resolv.conf /mnt/gentoo/etc
 ```
 
 Montar los sistemas de ficheros necesarios para proceder
 
 ```
-    # mount -t proc none /mnt/gentoo/proc
-    # mount --rbind /sys /mnt/gentoo/sys
-    # mount --rbind /dev /mnt/gentoo/dev
+# mount -t proc none /mnt/gentoo/proc
+# mount --rbind /sys /mnt/gentoo/sys
+# mount --rbind /dev /mnt/gentoo/dev
 ```
 
 Entrar en chroot:
 
 ```
-    # mkdir /mnt/gentoo/usr/portage
-    # chroot /mnt/gentoo /bin/bash
-    # source /etc/profile
-    # export PS1="(chroot) $PS1"
+# mkdir /mnt/gentoo/usr/portage
+# chroot /mnt/gentoo /bin/bash
+# source /etc/profile
+# export PS1="(chroot) $PS1"
 ```
 
 Ahora vamos a instalar una instantánea de repositorio de ebuilds desde la web y actualizar el repositorio
 
 ```
-    # emerge-webrsync
-    # emerge --sync --quiet
+# emerge-webrsync
+# emerge --sync --quiet
 ```
 
 
 Bien, ha llegado la hora de elegir un perfil para nuestra instalación. Gentoo, de manera predeterminada viene con un perfil recomendado seleccionado, ese es el que utilizo, pero tú puedes cambiarlo si quieres. Para listar todos los perfiles ejecuta:
 
 ```
-    # eselect profile list
+# eselect profile list
 ```
 Y para seleccionar el que desees:
 
 ```
-    # eselect profile set <<el_número_del_perfil>>
+# eselect profile set <<el_número_del_perfil>>
 ```
 
 Como dije el que utilizo es el que recomienda Gentoo, que, al menos al momento de escribir ésta guía, es el número 12.
@@ -179,52 +161,55 @@ Como dije el que utilizo es el que recomienda Gentoo, que, al menos al momento d
 Una vez hallamos elegido el perfil toca actualizar para tener una base para nuestro sistema:
 
 ```
-    # emerge --ask --update --deep --newuse @world
+# emerge --ask --update --deep --newuse @world
 ```
 Ahora vamos a configurar la zona horaria, para ver todas las zonas horarias disponibles en Gentoo, hacemos:
 
 ```
-    # ls /usr/share/zoneinfo
+# ls /usr/share/zoneinfo
 ```
 
 En éste caso usaré de ejemplo Madrid:
 
 ```
-    # echo "Europe/Madrid" > /etc/timezone
-    # emerge --config sys-libs/timezone-data
+# echo "Europe/Madrid" > /etc/timezone
+# emerge --config sys-libs/timezone-data
 ```
 
 Ahora es el turno de configurar las localizaciones. Deberás poner tu localización al final del archivo, estilo:
-*__es_ES.UTF-8 UTF-8__*
+```
+es_ES.UTF-8 UTF-8
+```
 
 ```
-    # nano -lw /etc/locale.gen
+# nano -lw /etc/locale.gen
 ```
 
 Guarda los cambios con *__CTRL + S__* y sal con *__CTRL + X__*. Ahora genera las localizaciones y actívalas con:
 
 ```
-    # locale-gen
-    # eselect locale list
-    # eselect locale set <<número_de_la_localización>>
-    # env-update && source /etc/profile && export PS1="(chroot) $PS1"
+# locale-gen
+# eselect locale list
+# eselect locale set <<número_de_la_localización>>
+# env-update && source /etc/profile && export PS1="(chroot) $PS1"
 ```
 
-Bien, ha llegado quizás el momento más importante de toda la guía, la compilación del kernel/núcleo. Tienes dos opciones: *__Dicho en forma de broma__* Hacerlo como los hombres y compilar el kernel/núcleo de forma manual o utilizar la herramienta *__Genkernel__* que hace todo el proceso de forma automatica jeje. Bien vamos de menor a mayor, así que primero explicaré cómo hacerlo con *__Genkernel__*. Primero instalaremos algunos paquetes importantes:
+Bien, ha llegado quizás el momento más importante de toda la guía, la compilación del kernel/núcleo. Tienes dos opciones: 
+*__Dicho en forma de broma__* Hacerlo como los hombres y compilar el kernel/núcleo de forma manual o utilizar la herramienta *__Genkernel__* que hace todo el proceso de forma automatica jeje. Bien vamos de menor a mayor, así que primero explicaré cómo hacerlo con *__Genkernel__*. Primero instalaremos algunos paquetes importantes. Éstos te servirán independientemente de la opción de compilación del kernel/núcleo que hallas elegido.
 
 ```
-    # emerge -a gentoo-sources genkernel sys-boot/grub:2 dhcpcd gentoolkit pciutils cryptsetup dosfstools ntfs3g
+# emerge -a gentoo-sources genkernel sys-boot/grub:2 dhcpcd gentoolkit pciutils cryptsetup dosfstools ntfs3g
 ```
 
 Aquí los paquetes importantes son: *__gentoo-sources, genkernel, sys-boot/grub:2, dhcpcd, gentoolkit, cryptsetup y pciutils__* los otros dos son controladores para poder detectar dispositivos FAT32 (*__dosfstools__*) y dispositivos NTFS (*__ntfs3g__*). Cuándo termine de compilar esos paquetes, crea el enlace a las fuentes del kernel/núcleo:
 
 ```
-    # ls -l /usr/src/linux
+# ls -l /usr/src/linux
 ```
 Y para compilar:
 
 ```
-    # genkernel all
+# genkernel all
 ```
 
 Ahora prepara un café y descansa un poco, éste proceso durará más o menos dependiendo de la potencia de tu procesador, yo tengo un i5 2540M y me ha durado unos 40 minutos.
@@ -232,9 +217,9 @@ Ahora prepara un café y descansa un poco, éste proceso durará más o menos de
 Bien ahora toca explicar cómo hacerlo o más bien cómo yo compilo el kernel/núcleo de forma manual, pues ésto depende de qué quieras compilar. Primero crear el enlace, entrar al directorio de las fuentes y entrar al menú de configuración:
 
 ```
-    # ls -l /usr/src/linux
-    # cd /usr/src/linux
-    # make menuconfig
+# ls -l /usr/src/linux
+# cd /usr/src/linux
+# make menuconfig
 ```
 
 Una vez aquí dentro vamos a activar algunas opciones que son necesarias para que el núcleo pueda funcionar. Algunas características necesarias Gentoo las trae activadas para hacernos la vida más fácil jeje.
@@ -246,7 +231,6 @@ Device Drivers --->
   Generic Driver Options --->
     [*] Maintain a devtmpfs filesystem to mount at /dev
     [ ]   Automount devtmpfs at /dev, after the kernel mounted the rootfs
-
 ```
 
 __Habilitar el soporte de disco SCSI__
@@ -276,12 +260,13 @@ Pseudo Filesystems --->
 ```
 
 __Controladores para Ethernet y Wi-Fi__
+
 Bien, aquí hay que hacer una pequeña pausa ya que necesitas saber qué controladores usa tu PC para Ethernet y Wi-Fi. Puedes obtener un poco de información con:
 ```
-    # lspci | grep Ethernet
-    # lspci | grep Network
+# lspci | grep Ethernet
+# lspci | grep Network
 ```
-Mi PC utiliza el controlador: *__Intel Wireless WiFi Next Gen AGN - Wireless-N/Advanced-N/Ultimate-N (iwlwifi)__* para la conexión inalámbrica y el controlador *__Intel (82586/82593/82596) devices__* para la conexión cableada. Si no obtienes información suficiente con el comando anterior debería buscar información en [Google](www.google.com)
+Mi PC utiliza el controlador: *__Intel Wireless WiFi Next Gen AGN - Wireless-N/Advanced-N/Ultimate-N (iwlwifi)__* para la conexión inalámbrica y el controlador *__Intel (82586/82593/82596) devices__* para la conexión cableada. Si no obtienes información suficiente con el comando anterior debería buscar información en [Google](https://www.google.com/)
 
 La sección para los controladores de red está en:
 ```
@@ -309,14 +294,11 @@ Device Drivers --->
     <*>     EHCI HCD (USB 2.0) support
     <*>     OHCI HCD (USB 1.1) support
 ```
-
 __Seleccionar los tipos y las características del procesador__
-
 ```
 Executable file formats / Emulations  --->
    [*] IA32 Emulation
 ```
-
 __Habilitar el soporte para GPT__
 
 ```
@@ -340,8 +322,7 @@ Firmware Drivers  --->
     EFI (Extensible Firmware Interface) Support  --->
         <*> EFI Variable Support via sysfs
 ```
-
-__Habilitar el soporte para sonido (ALSA__
+__Habilitar el soporte para sonido (ALSA)__
 
 Puedes encontrar información sobre tu tarjeta de sonido con:
 
@@ -447,18 +428,21 @@ File systems --->
 Bien, una vez hecho todos éstos pasos es hora de poner a compilar nuestro kernel/núcleo:
 
 ```
-    # make
-    # make modules_install
-    # make install
-    # genkernel --install initramfs
+# make
+# make modules_install
+# make install
+# genkernel --install initramfs
 ```
 
-*__make__* es para compilar el kernel/núcleo, *__make modules_install__* es para compilar los módulos, *__make install__* es para instalar el kernel y *__genkernel --install initramfs__* es para crear el initramfs.
+*__make__* es para compilar el kernel/núcleo.
+*__make modules_install__* es para compilar los módulos.
+*__make install__* es para instalar el kernel.
+*__genkernel --install initramfs__* es para crear el initramfs.
 
-Bien, ya con eso tendríamos nuestro kernel/núcleo listo, ahora toca editar el archivo fstab ubicado en *__/etc/fstab__* que sirve para montar las particiones automáticamente al encender nuestra PC. Si tienes conocimientos, puedes editarlo por tu cuenta, sin embargo, sino, puedes dejarlo como lo dejo yo y no tendrás ningún problema, *__Estoy tomando en cuenta de que haz seguido al pie de la letra la guía o al menos el punto de las particiones__*
+Bien, ya con eso tendríamos nuestro kernel/núcleo listo, ahora toca editar el archivo fstab ubicado en *__/etc/fstab__* que sirve para montar las particiones automáticamente al encender nuestra PC. Si tienes conocimientos, puedes editarlo por tu cuenta, sin embargo, sino, puedes dejarlo como lo dejo yo y no tendrás ningún problema, *__(Estoy tomando en cuenta de que haz seguido al pie de la letra la guía o al menos el punto de las particiones)__*
 
 ```
-    # nano -lw /etc/fstab
+# nano -lw /etc/fstab
  ```
  
  Mi archivo fstab está así, puedes eliminar tranquilamente la última línea si no estás utilizando un SSD:
@@ -494,31 +478,28 @@ Bien, ya con eso tendríamos nuestro kernel/núcleo listo, ahora toca editar el 
 #LABEL=swap		none		swap		sw		0 0
 
 /dev/sda1		/boot		ext2		noatime,nodiratime	0 0
-/dev/mapper/swap		none		swap		defaults		0 0
-/dev/mapper/root		/		ext4		noatime,nodiratime	0 1
-/dev/mapper/home		/home		ext4		noatime,nodiratime	0 2
+/dev/sda2		none		swap		defaults		0 0
+/dev/sda3		/		ext4		noatime,nodiratime	0 1
+/dev/sda4		/home		ext4		noatime,nodiratime	0 2
 
 tmpfs /tmp tmpfs defaults,noatime,mode=1777 0 0
 ```
-
 Ahora es el momento de ponerle nombre a nuestra PC jeje, éste nombre se lo agregaremos ahora pero puedes cambiarlo en cualquier momento si así lo deseas.
 
 ```
-    # nano -lw /etc/conf.d/hostname
+# nano -lw /etc/conf.d/hostname
 ```
-
 Introduce el nombre que desees dentro de las comillas.
 
 Ahora sería bueno que ejecutaras
 
 ```
-    # ifconfig
+# ifconfig
 ```
-
 Para que sepas que nombre es asignado a tu tarjeta de ethernet y así poder configurarla para utilizar *__DHCP__*  y poder acceder a internet, al menos hasta que instales *__NetworkManager__* o cualquier otro gestor de red. En mi caso es asignado el nombre *__"eno1"__*, así que quedaría más o menos así:
 
 ```
-    # nano -lw /etc/conf.d/net
+# nano -lw /etc/conf.d/net
 ```
 
 Dentro del archivo pones: *__config_eno1="dhcp"__* evidentemente *__eno1__* lo cambias por el nombre que se le asignó a tu tarjeta de ethernet.
@@ -526,14 +507,14 @@ Dentro del archivo pones: *__config_eno1="dhcp"__* evidentemente *__eno1__* lo c
 Bien, ya casi hemos terminado, pero no te desconcentres porque ahora vamos por otro de los puntos más importantes y es el de asignar una contraseña al usuario root.
 
 ```
-    # passwd
+# passwd
 ```
 Ponle la que desees, en el proceso no verás nada, pero de seguro eso ya lo sabes jeje.
 
 Ahora estableceremos la distribución que tendrá nuestro teclado en la's tty's. Aquí tienes que tener cuidado, pues una mala configuración puede ocasionar resultados extraños cuándo estemos teclando.
 
 ```
-    # nano -lw /etc/conf.d/keymaps
+# nano -lw /etc/conf.d/keymaps
 ```
 Yo utilizo como distribución: *__Inglés (Estados Unidos Internacional)__* y el que trae por defecto sólo es *__Inglés__* así que, en mi caso, quedaría más o menos así:
 
@@ -568,40 +549,32 @@ Aquí el punto importante es arriba dónde dice: *__keymaps="us"__*
 Ahora vamos a configurar el reloj del sistema. Por defecto viene en *__UTC__* pero lo puedes cambiar por el que quieras, yo ésto lo dejo así.
 
 ```
-    # nano -lw /etc/conf.d/hwclock
+# nano -lw /etc/conf.d/hwclock
 ```
 
 Es el turno del grub, toca instalación y configuración. Empecemos por la instalación:
 
 ```
-    # grub-install /dev/sda
+# grub-install /dev/sda
 ```
 
 Y la configuración
 ```
-    # grub-mkconfig -o /boot/grub/grub.cfg
+# grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
 Salimos del chroot y desmontamos las particiones:
 
 ```
-    # exit
-    # cd ..
-    # cd ..
-    # umount -l /mnt/gentoo/dev{/pts,/shm,}
-    # umount -R /mnt/gentoo
+# exit
+# cd ..
+# cd ..
+# umount -l /mnt/gentoo/dev{/pts,/shm,}
+# umount -R /mnt/gentoo
 ```
-
-Si cifraste las particiones como expliqué al principio debes hacer:
-```
-    # cryptsetup luksClose /dev/mapper/swap
-    # cryptsetup luksClose /dev/mapper/root
-    # cryptsetup luksClose /dev/mapper/home
-```
-
 Reiniciar...
 ```
-    # reboot
+# reboot
 ```
 
 Felicidades, ya tienes Gentoo instalado, ahora queda hacer alguna que otra modificación para empezar a compilar e instalar los paquetes que necesitemos.
@@ -609,32 +582,32 @@ Felicidades, ya tienes Gentoo instalado, ahora queda hacer alguna que otra modif
 Primero, crear un usuario a parte del root, pues como seguro sabrás no es recomendable utilizar siempre el usuario root, es mejor tener un usuario "normal" que pueda invocar permisos de root sólo cuándo sea necesario. Nos logeamos con el user root y la contraseña que específicamos en la instalación.
 
 ```
-    # useradd -m -G users,wheel,audio,video,usb,portage,cdrom -s /bin/bash <<nombre_de_usuario>>
-    # passwd <<nombre_de_usuario>>
+# useradd -m -G users,wheel,audio,video,usb,portage,cdrom -s /bin/bash <<nombre_de_usuario>>
+# passwd <<nombre_de_usuario>>
 ```
 
 Ahora instalamos *__sudo__* para poder utilizar permisos de administrador con nuestro usuario:
 
 ```
-    # emerge --ask sudo
+# emerge -a sudo
 ```
 
-Editamos el fichero: *__/etc/sudoers__* y descomentamos la línea: # &wheel ALL=(ALL_ ALL
+Editamos el fichero: *__/etc/sudoers__* y descomentamos la línea: # &wheel ALL=(ALL) ALL
 ```
 ## Uncomment to allow members of group wheel to execute any command
-# %wheel ALL=(ALL) ALL
+%wheel ALL=(ALL) ALL
 ```
 
 Cerramos sesión de la cuenta de root y nos logeamos con el usuario que acabamos de crear:
 
 ```
-    # exit
+# exit
 ```
 
 Y el último paso de ésta guía es instalar el xorg para poder instalar el DE o WM que deseemos.
 
 ```
-    # sudo emerge --ask xorg-x11 xinit twm xconsole xclock xterm
+# sudo emerge -a xorg-x11 xinit twm xconsole xclock xterm
 ```
 
 Ahora instalas los programas que desees/necesites, ejemplo: VLC, Firefox, etc. Podrás encontrar más información en la [Wiki de Gentoo](https://wiki.gentoo.org/wiki/Main_Page) y buscando en la WWW. Ésto sólo fue una pequeña introducción, tienes todo un universo que descubrir con Gentoo. Así que con ésto me despido. Disfuta tu Gentoo!
