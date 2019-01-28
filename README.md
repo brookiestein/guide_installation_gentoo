@@ -3,6 +3,8 @@ __Guía de instalación de Gentoo con LUKS:__
 Ésta es una guía de instalación de Gentoo personal, es decir, todo lo que ella tenga son cosas que yo aplico a mi sistema.
 Evidentemente ésto no impide que tú, querido lector, le saques provecho, así que sin más empecemos.
 
+Si encuentras algún error, por favor, no dudes en hacermelo saber.
+
 Lo primero que hago/haremos es bootear un USB con la iso de Gentoo. La cuál puede ser encontrada en la [página oficial de Gentoo](https://www.gentoo.org/downloads/). El proceso de booteo varía dependiendo del sistema operativo que tengas instalado así que te dejaré a ti ese proceso, aunque sí que te daré algunas pistas: *__Si usas alguna de las tantas distribuciones GNU/Linux puedes usar el comando dd, que ya viene instalado en (casi) todas. Mientras que si usas Windows te puedo recomendar que uses "PowerISO" que es el que he utilizado y me ha funcionado bastante bien__*
 
 Bien, ya teniendo nuestra USB booteada con Gentoo, procederemos a entrar desde ella en nuestra PC, éste paso como podrás adivinar es diferente para casi todos, pues depende de la PC y no todos tenemos la misma PC jeje, pero no es difícil, es más si quieres instalar Gentoo eso no debe ser un problema.
@@ -10,7 +12,7 @@ Bien, ya teniendo nuestra USB booteada con Gentoo, procederemos a entrar desde e
 Llegados a éste punto toca particionar nuestro disco duro o SSD. Para éste fin yo utilizo la herramienta __"cfdisk"__ que ya viene en el livecd de Gentoo: Yo hago 4 particiones: __/boot, swap, / y /home__.
 
 ```
-# cfidks /dev/sda
+# cfdisk /dev/sda
 ```
 
 Particionar con cfdisk es realmente sencillo, seleccionas el espacio vacío o en el caso de que el disco ya tenga formato, pues eliminarlo con la opción __"Remove"__, *__te moverás con las flechas arriba, izquierda, abajo y derecha y seleccionas con enter__*.
@@ -43,7 +45,7 @@ Para poder utilizar las particiones hay que abrirlas:
 Los nombres que tienen después de la ubicación de la partición, es el nombre identificativo de la unidad.
 
 ```
-   # mkfs.ext2 /dev/boot
+   # mkfs.ext2 /dev/sda1
    # mkswap /dev/mapper/swap
    # swapon /dev/mapper/swap
    # mkfs.ext4 /dev/mapper/root
