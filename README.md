@@ -494,9 +494,9 @@ Bien, ya con eso tendríamos nuestro kernel/núcleo listo, ahora toca editar el 
 #LABEL=swap		none		swap		sw		0 0
 
 /dev/sda1		/boot		ext2		noatime,nodiratime	0 0
-/dev/sda2		none		swap		defaults		0 0
-/dev/sda3		/		ext4		noatime,nodiratime	0 1
-/dev/sda4		/home		ext4		noatime,nodiratime	0 2
+/dev/mapper/swap		none		swap		defaults		0 0
+/dev/mapper/root		/		ext4		noatime,nodiratime	0 1
+/dev/mapper/home		/home		ext4		noatime,nodiratime	0 2
 
 tmpfs /tmp tmpfs defaults,noatime,mode=1777 0 0
 ```
