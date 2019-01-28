@@ -327,11 +327,11 @@ __Habilitar el soporte para sonido (ALSA)__
 Puedes encontrar información sobre tu tarjeta de sonido con:
 
 ```
-    # lspci | grep -i audio
+# lspci | grep -i audio
 ```
 
 ```
-    Device Drivers --->
+Device Drivers --->
     <*> Sound card support
         <*> Advanced Linux Sound Architecture --->
             [*] PCI sound devices  --->
@@ -435,8 +435,11 @@ Bien, una vez hecho todos éstos pasos es hora de poner a compilar nuestro kerne
 ```
 
 *__make__* es para compilar el kernel/núcleo.
+
 *__make modules_install__* es para compilar los módulos.
+
 *__make install__* es para instalar el kernel.
+
 *__genkernel --install initramfs__* es para crear el initramfs.
 
 Bien, ya con eso tendríamos nuestro kernel/núcleo listo, ahora toca editar el archivo fstab ubicado en *__/etc/fstab__* que sirve para montar las particiones automáticamente al encender nuestra PC. Si tienes conocimientos, puedes editarlo por tu cuenta, sin embargo, sino, puedes dejarlo como lo dejo yo y no tendrás ningún problema, *__(Estoy tomando en cuenta de que haz seguido al pie de la letra la guía o al menos el punto de las particiones)__*
@@ -544,7 +547,7 @@ dumpkeys_charset=""
 fix_euro="NO"
 ```
 
-Aquí el punto importante es arriba dónde dice: *__keymaps="us"__*
+Aquí el punto importante es arriba dónde dice: *__keymap="us"__*
 
 Ahora vamos a configurar el reloj del sistema. Por defecto viene en *__UTC__* pero lo puedes cambiar por el que quieras, yo ésto lo dejo así.
 
