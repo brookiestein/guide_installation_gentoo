@@ -1,4 +1,4 @@
-__Guía de instalación de Gentoo__
+__Guía de instalación de Gentoo (Personal)__
 
 Ésta es una guía de instalación de Gentoo personal, es decir, todo lo que ella tenga son cosas que yo aplico a mi sistema.
 Evidentemente ésto no impide que tú, querido lector, le saques provecho, así que sin más empecemos.
